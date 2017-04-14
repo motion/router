@@ -41,7 +41,6 @@ export class ObservableRouter {
   }
 
   @computed get activeView() {
-    console.log('getting active view', this.routes, this.route)
     return this.routes[this.route]
   }
 
