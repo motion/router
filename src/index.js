@@ -4,7 +4,7 @@ import browserHistory from 'history/createBrowserHistory'
 
 export Router from './router'
 
-const properRoute = path => path.indexOf('/') === 0 ? path : `/${path}`
+const properRoute = path => (path.indexOf('/') === 0 ? path : `/${path}`)
 
 export class ObservableRouter {
   max = window.history.length
@@ -12,15 +12,21 @@ export class ObservableRouter {
   @observable path = window.location.pathname
   @observable route = null
   @observable params = {}
+  @observable forceUpdate = false
+
+  _id = Math.random()
 
   constructor({ routes, history }) {
     this.routes = routes
     this.history = history || browserHistory()
 
-    const routeHandlers = Object.keys(routes).reduce((acc, path) => ({
-      ...acc,
-      [properRoute(path)]: params => this.setRoute(path, params),
-    }), {})
+    const routeHandlers = Object.keys(routes).reduce(
+      (acc, path) => ({
+        ...acc,
+        [properRoute(path)]: params => this.setRoute(path, params),
+      }),
+      {}
+    )
 
     this.router = new Router({
       routes: routeHandlers,
@@ -28,8 +34,9 @@ export class ObservableRouter {
     })
 
     autorun(() => {
-      if (this.path !== window.location.pathname) {
+      if (this.path !== window.location.pathname || this.forceUpdate) {
         this.history.push(this.path)
+        this.forceUpdate = false
       }
     })
   }
@@ -77,16 +84,16 @@ export class ObservableRouter {
   @action set = (key, val) => {
     const Route = this.router.routeTable[`/${this.route}`]
 
-    const params = typeof key === 'object' ?
-      this.setObject(key) :
-      this.setParam(key, val)
+    const params = typeof key === 'object'
+      ? this.setObject(key)
+      : this.setParam(key, val)
 
     const newPath = Route.stringify(params)
 
     if (newPath !== this.path) {
       this.path = newPath
     }
-  }
+  };
 
   normalizeParams = (params: Object): Object => {
     // remove false/null
@@ -105,7 +112,7 @@ export class ObservableRouter {
   setParam = (key, val) =>
     this.normalizeParams({ ...toJS(this.params), [key]: val })
 
-  @action unset = (key) => {
+  @action unset = key => {
     this.set(key, false)
   }
 
