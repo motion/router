@@ -13,6 +13,7 @@ export class ObservableRouter {
   @observable route = null
   @observable params = {}
   @observable forceUpdate = false
+  @observable version = 0
 
   _id = Math.random()
 
@@ -45,6 +46,10 @@ export class ObservableRouter {
     this.path = window.location.pathname
     this.route = path
     this.params = params || {}
+  }
+
+  @computed get key() {
+    return `${this.version}${this.forceUpdate}${JSON.stringify(this.path)}`
   }
 
   @computed get activeView() {
