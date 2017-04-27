@@ -126,7 +126,7 @@ export class ObservableRouter {
   }
 
   isActive = path => {
-    return this.path === path
+    return !!this.router.getMatch(path)
   }
 }
 

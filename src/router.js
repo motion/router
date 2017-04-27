@@ -6,10 +6,13 @@ export default class Router {
     this.history = history
 
     // for quick lookups
-    this.routeTable = Object.keys(this.routes).reduce((acc, path) => ({
-      ...acc,
-      [path]: new Route(path),
-    }), {})
+    this.routeTable = Object.keys(this.routes).reduce(
+      (acc, path) => ({
+        ...acc,
+        [path]: new Route(path),
+      }),
+      {}
+    )
 
     // for easy looping
     this.routeList = Object.keys(this.routeTable).map(path => ({
@@ -27,6 +30,16 @@ export default class Router {
       if (match) {
         this.routes[path](match)
         break
+      }
+    }
+  }
+
+  getMatch = path => {
+    for (const { route } of this.routeList) {
+      const match = route.match(path)
+      if (match) {
+        console.log('matched', match)
+        return match
       }
     }
   }
