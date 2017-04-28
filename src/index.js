@@ -1,4 +1,4 @@
-import { toJS, observable, computed, action, autorun } from 'mobx'
+import { observable, computed, action, autorun } from 'mobx'
 import Router from './router'
 import browserHistory from 'history/createBrowserHistory'
 
@@ -11,7 +11,7 @@ export class ObservableRouter {
   @observable position = window.history.length
   @observable path = window.location.pathname
   @observable route = null
-  @observable params = {}
+  @observable.ref params = {}
   @observable forceUpdate = false
   @observable version = 0
 
@@ -111,11 +111,9 @@ export class ObservableRouter {
     return params
   }
 
-  setObject = params =>
-    this.normalizeParams({ ...toJS(this.params), ...params })
+  setObject = params => this.normalizeParams({ ...this.params, ...params })
 
-  setParam = (key, val) =>
-    this.normalizeParams({ ...toJS(this.params), [key]: val })
+  setParam = (key, val) => this.normalizeParams({ ...this.params, [key]: val })
 
   @action unset = key => {
     this.set(key, false)
