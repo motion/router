@@ -38,7 +38,6 @@ export default class Router {
     for (const { route } of this.routeList) {
       const match = route.match(path)
       if (match) {
-        console.log('matched', match)
         return match
       }
     }
